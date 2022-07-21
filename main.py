@@ -8,6 +8,8 @@ def main():
     flight_manager = FlightManager()
     notification_manager = NotificationManager()
 
+    sheet_manager.add_user()
+
     if sheet_manager.codes[0] != 'PAR':
         iata_codes = [flight_manager.get_iata_code(city) for city in sheet_manager.cities]
         sheet_manager.update_codes_row(iata_codes)
@@ -21,7 +23,8 @@ def main():
         lowest_price = sheet_manager.lowest_prices[i]
 
         if flight.price < lowest_price:
-            notification_manager.send_message(flight)
+            notification_manager.send_sms(flight)
+            notification_manager.email_users(flight, sheet_manager.emails)
 
 
 if __name__ == '__main__':

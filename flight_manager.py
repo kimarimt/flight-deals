@@ -80,4 +80,58 @@ class FlightManager:
 
                 self.flights.append(flight)
             except IndexError:
-                self.flights.append({})
+                self.search_with_stopovers(code)
+
+    def search_with_stopovers(self, code, stopovers=2):
+        try:
+            search_url = 'https://tequila-api.kiwi.com/v2/search'
+            tomorrow = (datetime.today() + timedelta(days=1)) \
+                .strftime(self.date_format)
+            six_months = (datetime.today() + timedelta(days=182)) \
+                .strftime(self.date_format)
+            params = {
+                'fly_from': 'DTW',
+                'fly_to': code,
+                'date_from': tomorrow,
+                'date_to': six_months,
+                'nights_in_dst_from': 7,
+                'nights_in_dst_to': 28,
+                'flight_type': 'round',
+                'curr': 'USD',
+                'asc': 1,
+                'limit': 1,
+                'max_stopovers': stopovers
+            }
+
+            response = requests.get(
+                url=search_url,
+                headers=self.headers,
+                params=params
+            )
+            response.raise_for_status()
+            data = response.json()['data'][0]
+            city_from = data['cityFrom']
+            fly_from = data['flyFrom']
+            city_to = data['cityTo']
+            fly_to = data['flyTo']
+            price = int(data['price'])
+            route = data['route']
+            leave_date = route[0]['local_arrival'].split('T')[0]
+            return_date = route[-1]['local_arrival'].split('T')[0]
+            via_city = route[0]['cityTo']
+
+            flight = FlightData(
+                city_from=city_from,
+                fly_from=fly_from,
+                city_to=city_to,
+                fly_to=fly_to,
+                price=price,
+                leave_date=leave_date,
+                return_date=return_date,
+                stopovers=1,
+                via_city=via_city
+            )
+
+            self.flights.append(flight)
+        except IndexError:
+            self.flights.append({})

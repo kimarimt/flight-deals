@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -10,3 +10,6 @@ class FlightData:
     price: int
     leave_date: str
     return_date: str
+    stopovers: int = 0
+    via_city: str = ''
+
