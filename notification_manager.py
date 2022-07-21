@@ -42,6 +42,9 @@ from {flight.leave_date} to {flight.return_date}
             smtp.login(self.email_address, self.password)
 
             stopover_content = ''
+            link = 'https://www.google.co.uk/flights?hl=en#flt=' + \
+                   f'{flight.fly_from}.{flight.fly_to}.{flight.leave_date}*{flight.fly_to}.' + \
+                   f'{flight.fly_from}.{flight.return_date}'
 
             if flight.via_city != '' and flight.stopovers != 0:
                 stopover_content = f'\nFlight has {flight.stopovers} stopover in {flight.via_city}.'
@@ -51,6 +54,7 @@ LOW PRICE ALERT! ONLY ${flight.price} to fly
 from {flight.city_from}-{flight.fly_from} to {flight.city_to}-{flight.fly_to}, 
 from {flight.leave_date} to {flight.return_date}
 {stopover_content}
+{link}
 '''
 
             for email in emails:
